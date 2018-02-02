@@ -95,7 +95,6 @@ public abstract class BaseFragment extends Fragment {
       @Override
       public void onSuccess(String json) {
 
-        Log.i("CategoryFragment", "parseJson: " + json);
         //缓存内存
         MyApplication.getProtocolCache().put(key, json);
         //缓存到本地
