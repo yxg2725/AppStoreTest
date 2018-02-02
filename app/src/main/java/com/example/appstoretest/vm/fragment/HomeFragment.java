@@ -14,12 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.example.appstoretest.MyApplication;
 import com.example.appstoretest.model.net.AppInfo;
 import com.example.appstoretest.model.net.HomeInfo;
+import com.example.appstoretest.utils.CommonCacheProcess;
 import com.example.appstoretest.utils.Constants;
 import com.example.appstoretest.utils.HttpUtils;
 import com.example.appstoretest.utils.UIUtils;
 import com.example.appstoretest.view.RecyclerViewFactory;
+import com.example.appstoretest.vm.BaseCallBack;
 import com.example.appstoretest.vm.adapter.HomeAdapter;
 import com.example.appstoretest.vm.adapter.RvAdapter;
 import com.google.gson.Gson;
@@ -40,6 +43,7 @@ import okhttp3.Response;
 public class HomeFragment extends BaseFragment {
 
   private HomeInfo info;
+  private String key;
 
   @Override
   public void showSuccess() {
@@ -52,44 +56,50 @@ public class HomeFragment extends BaseFragment {
 
   @Override
   public void loadData() {
+
+    //从内存中获取
+    key = Constants.Http.HOME + ".0";
+    String json = CommonCacheProcess.getCacheFromLocal(key);
+    if(json != null){
+
+      parseJson(json);
+      commonPager.runOnUiThread();
+    }else{
+      //获取网络数据
+      loadNetData();
+    }
+
+  }
+
+  private void loadNetData() {
     HashMap<String, Object> params = new HashMap<String, Object>();
     params.put("index", 0);
     Call call = HttpUtils.getClient().newCall(HttpUtils.getRequest(Constants.Http.HOME, params));
-    call.enqueue(new Callback() {
+    call.enqueue(new BaseCallBack(commonPager) {
       @Override
-      public void onFailure(Call call, IOException e) {
-        commonPager.isReadData = false;
-        commonPager.runOnUiThread();
+      public void onSuccess(String json) {
+        //缓存内存
+        MyApplication.getProtocolCache().put(key, json);
+        //缓存到本地
+        CommonCacheProcess.cacheToFile(key, json);
+
+        parseJson(json);
       }
-
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
-
-        if(response.code() == 200){
-          commonPager.isReadData = true;
-          String jsonString = response.body().string();
-          Gson gson = new Gson();
-          info = gson.fromJson(jsonString, HomeInfo.class);
-
-
-          List<AppInfo> list = info.list;
-          List<String> picture = info.picture;
-          if ((list != null && list.size() > 0) || (picture != null && picture.size() > 0)) {
-            commonPager.isDataEmpty = false;
-          } else {
-            commonPager.isDataEmpty = true;
-          }
-        }else{
-          commonPager.isReadData = false;
-        }
-
-        // 更新界面
-        commonPager.runOnUiThread();
-      }
-
-
     });
   }
 
+  public void parseJson(String json){
+
+    info = MyApplication.getGson().fromJson(json, HomeInfo.class);
+
+    List<AppInfo> list = info.list;
+    List<String> picture = info.picture;
+    if ((list != null && list.size() > 0) || (picture != null && picture.size() > 0)) {
+      commonPager.isDataEmpty = false;
+    } else {
+      commonPager.isDataEmpty = true;
+    }
+
+  }
 
 }
