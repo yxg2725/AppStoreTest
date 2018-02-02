@@ -1,29 +1,31 @@
 package com.example.appstoretest.vm.fragment;
 
-
 import android.support.v7.widget.RecyclerView;
 
 import com.example.appstoretest.MyApplication;
-import com.example.appstoretest.model.net.AppInfo;
-import com.example.appstoretest.model.net.HomeInfo;
+import com.example.appstoretest.model.net.SubjectInfo;
 import com.example.appstoretest.utils.Constants;
 import com.example.appstoretest.view.RecyclerViewFactory;
 import com.example.appstoretest.vm.adapter.HomeAdapter;
+import com.example.appstoretest.vm.adapter.SubjectAdapter;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
+import static android.R.id.list;
+
 /**
- * Created by ant on 2018/1/31.
+ * Created by ant on 2018/2/2.
  */
 
-public class HomeFragment extends BaseFragment {
+public class SubjectFragment extends BaseFragment {
 
-  private HomeInfo info;
+  private List<SubjectInfo> datas;
 
   @Override
   public void showSuccess() {
     RecyclerView mRv = RecyclerViewFactory.createVertical();
-    HomeAdapter rvAdapter = new HomeAdapter(info,this.getActivity());
+    SubjectAdapter rvAdapter = new SubjectAdapter(datas);
     mRv.setAdapter(rvAdapter);
 
     commonPager.changView(mRv);
@@ -31,22 +33,17 @@ public class HomeFragment extends BaseFragment {
 
   @Override
   public String getPath() {
-    return Constants.Http.HOME;
+    return Constants.Http.SUBJECT;
   }
 
   @Override
-  public void parseJson(String json){
+  public void parseJson(String json) {
+    datas = MyApplication.getGson().fromJson(json, new TypeToken<List<SubjectInfo>>() {}.getType());
 
-    info = MyApplication.getGson().fromJson(json, HomeInfo.class);
-
-    List<AppInfo> list = info.list;
-    List<String> picture = info.picture;
-    if ((list != null && list.size() > 0) || (picture != null && picture.size() > 0)) {
+    if ((datas != null && datas.size() > 0)) {
       commonPager.isDataEmpty = false;
     } else {
       commonPager.isDataEmpty = true;
     }
-
   }
-
 }

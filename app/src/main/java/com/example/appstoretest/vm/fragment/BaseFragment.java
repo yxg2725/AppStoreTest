@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import com.example.appstoretest.vm.base.CommonPager;
 import java.util.HashMap;
 
 import okhttp3.Call;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by ant on 2018/1/31.
@@ -91,6 +94,8 @@ public abstract class BaseFragment extends Fragment {
     call.enqueue(new BaseCallBack(commonPager) {
       @Override
       public void onSuccess(String json) {
+
+        Log.i("CategoryFragment", "parseJson: " + json);
         //缓存内存
         MyApplication.getProtocolCache().put(key, json);
         //缓存到本地

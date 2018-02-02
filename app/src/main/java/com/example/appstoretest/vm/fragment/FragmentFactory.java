@@ -20,6 +20,18 @@ public class FragmentFactory {
       case 2:
         fragment=new GameFragment();
         break;
+      case 3:
+        fragment=new SubjectFragment();
+        break;
+      case 4:
+        fragment=new CategoryFragment();
+        break;
+      case 5:
+        fragment=new RecommendFragment();
+        break;
+      case 6:
+        fragment=new HotFragment();
+        break;
     }
 
     return fragment;

@@ -15,6 +15,7 @@ import com.example.appstoretest.utils.UIUtils;
 import com.example.appstoretest.vm.holder.BaseHolder;
 import com.example.appstoretest.vm.holder.FooterHolder;
 import com.example.appstoretest.vm.holder.HomeHolder;
+import com.example.appstoretest.vm.holder.SubjectHolder;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,13 +49,26 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
   @Override
   public BaseHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     BaseHolder holder = null;
-    if (viewType == NORMAL_LAYOUT){
-      View view = LayoutInflater.from(UIUtils.getContext()).inflate(getNomalLayoutDesId(),parent,false);
-      holder = new HomeHolder(view);
-    }else if(viewType == RVFOOTER){
-      View view = LayoutInflater.from(UIUtils.getContext()).inflate(R.layout.item_loadmore,parent,false);
-      holder = footerHolder = new FooterHolder(view,this);
+
+    switch(viewType){
+      case NORMAL_LAYOUT:
+
+        if(getPath().equals(Constants.Http.SUBJECT)){
+          View view = LayoutInflater.from(UIUtils.getContext()).inflate(getNomalLayoutDesId(),parent,false);
+          holder = new SubjectHolder(view);
+
+        }else{
+          View view = LayoutInflater.from(UIUtils.getContext()).inflate(getNomalLayoutDesId(),parent,false);
+          holder = new HomeHolder(view);
+        }
+
+        break;
+      case RVFOOTER:
+        View view2 = LayoutInflater.from(UIUtils.getContext()).inflate(R.layout.item_loadmore,parent,false);
+        holder = footerHolder = new FooterHolder(view2,this);
+        break;
     }
+
     return holder;
   }
 
