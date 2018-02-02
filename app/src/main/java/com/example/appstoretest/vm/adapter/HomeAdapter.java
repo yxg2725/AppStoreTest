@@ -1,39 +1,22 @@
 package com.example.appstoretest.vm.adapter;
 
-import android.databinding.DataBindingUtil;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.example.appstoretest.MyApplication;
 import com.example.appstoretest.R;
-import com.example.appstoretest.databinding.ItemAppinfoBinding;
 import com.example.appstoretest.model.net.AppInfo;
 import com.example.appstoretest.model.net.HomeInfo;
-import com.example.appstoretest.utils.CommonCacheProcess;
 import com.example.appstoretest.utils.Constants;
-import com.example.appstoretest.utils.HttpUtils;
 import com.example.appstoretest.utils.UIUtils;
 import com.example.appstoretest.vm.holder.BaseHolder;
-import com.example.appstoretest.vm.holder.FooterHolder;
-import com.example.appstoretest.vm.holder.HomeHolder;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by ant on 2018/1/31.
@@ -55,10 +38,12 @@ public class HomeAdapter extends BaseRecyclerViewAdapter<AppInfo>{
 
   @Override
   public int getItemViewType(int position) {
-    super.getItemViewType(position);
-
     if (position == 0){
       viewType = RVHEADER;//头布局
+    }else if (position == (datas.size() + 1)){
+      viewType = RVFOOTER;
+    }else{
+      viewType = NORMAL_LAYOUT;
     }
     return viewType;
   }
@@ -100,6 +85,16 @@ public class HomeAdapter extends BaseRecyclerViewAdapter<AppInfo>{
   protected AppInfo getNomalItemData(int position) {
 
     return info.list.get(position-1);
+  }
+
+  @Override
+  protected String getPath() {
+    return Constants.Http.HOME;
+  }
+
+  @Override
+  protected int getNomalLayoutDesId() {
+    return R.layout.item_appinfo;
   }
 
 

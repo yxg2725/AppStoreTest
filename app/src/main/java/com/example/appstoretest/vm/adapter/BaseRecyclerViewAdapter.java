@@ -43,22 +43,13 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
     this.datas = datas;
   }
 
-  @Override
-  public int getItemViewType(int position) {
 
-    if(position == datas.size()+1){
-      viewType = RVFOOTER;//加载下一页布局
-    }else{
-      viewType = NORMAL_LAYOUT;//正常布局
-    }
-    return viewType;
-  }
 
   @Override
   public BaseHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     BaseHolder holder = null;
     if (viewType == NORMAL_LAYOUT){
-      View view = LayoutInflater.from(UIUtils.getContext()).inflate(R.layout.item_appinfo,parent,false);
+      View view = LayoutInflater.from(UIUtils.getContext()).inflate(getNomalLayoutDesId(),parent,false);
       holder = new HomeHolder(view);
     }else if(viewType == RVFOOTER){
       View view = LayoutInflater.from(UIUtils.getContext()).inflate(R.layout.item_loadmore,parent,false);
@@ -66,6 +57,8 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
     }
     return holder;
   }
+
+
 
   @Override
   public void onBindViewHolder(BaseHolder holder, int position) {
@@ -76,16 +69,10 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
       holder.setData(FooterHolder.LOADING);
 
       //加载下一页数据
-      loadNextData(footerHolder);
+      loadNextData();
     }
   }
 
-
-
-  @Override
-  public int getItemCount() {
-    return 0;
-  }
 
   public void parseJson(String json){
 
@@ -113,13 +100,23 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
    * 获取正常布局内容
    */
   protected abstract D getNomalItemData(int position);
+    /**
+     * 获取不同界面需要展示数据的服务器链接
+     * @return
+     */
+  protected abstract String getPath();
+  /**
+   * 获取正常布局
+   * @return
+   */
+  protected abstract int getNomalLayoutDesId();
 
 
-  public void loadNextData(final FooterHolder footerHolder) {
+  public void loadNextData() {
 
 
     //从本地缓存中读取
-    key = Constants.Http.HOME + "." + datas.size();
+    key = getPath() + "." + datas.size();
     String json = CommonCacheProcess.getCacheFromLocal(key);
 
     if(json != null){
@@ -136,7 +133,7 @@ public abstract class BaseRecyclerViewAdapter<D> extends RecyclerView.Adapter<Ba
   private void loadNetData() {
     HashMap<String, Object> params = new HashMap<>();
     params.put("index", datas.size());
-    final Request request = HttpUtils.getRequest(Constants.Http.HOME, params);
+    final Request request = HttpUtils.getRequest(getPath(), params);
 
     Call call = HttpUtils.getClient().newCall(request);
 

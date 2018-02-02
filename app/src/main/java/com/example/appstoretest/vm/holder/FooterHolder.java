@@ -32,7 +32,7 @@ public class FooterHolder extends BaseHolder<Integer>{
       public void onClick(View view) {
         setData(FooterHolder.LOADING);
         //加载下一页数据
-        adapter.loadNextData(FooterHolder.this);
+        adapter.loadNextData();
       }
     });
   }
